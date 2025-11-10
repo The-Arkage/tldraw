@@ -1,22 +1,30 @@
 FROM node:20-alpine
+
 WORKDIR /app
 
-RUN apk add --no-cache git python3 make g++
+# git serve per gli script postinstall
+RUN apk add --no-cache git
+
+# usa yarn via corepack
 RUN corepack enable
 
+# copia il monorepo
 COPY . .
 
+# hack per far felici gli script che si aspettano un repo git
 RUN git config --global user.email "build@docker.local" && \
     git config --global user.name "Docker Build" && \
     git init && git add . && git commit -m "initial"
 
-# Installa solo le dipendenze necessarie
-RUN yarn install --frozen-lockfile
+# install dipendenze monorepo
+RUN yarn install
 
-# Build con focus specifico su dotcom, ignorando errori di altri packages
-WORKDIR /app
-RUN yarn turbo run build --filter=@tldraw/dotcom... --continue || true
+# builda il client dotcom
+WORKDIR /app/apps/dotcom/client
+RUN yarn build
 
-WORKDIR /app/apps/dotcom
+# vite preview gira su 3000
 EXPOSE 3000
+
+# usa lo script start del client
 CMD ["yarn", "start"]
