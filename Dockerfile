@@ -9,8 +9,8 @@ RUN corepack enable
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
 
-# Installa dipendenze del workspace root
-RUN yarn install --immutable
+# Installa dipendenze (senza --immutable per permettere aggiornamenti)
+RUN yarn install
 
 # Copia il resto del codice
 COPY . .
