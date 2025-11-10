@@ -9,8 +9,8 @@ RUN corepack enable
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
 
-# Installa dipendenze saltando gli script postinstall
-RUN yarn install --ignore-scripts
+# Installa dipendenze saltando i build scripts
+RUN yarn install --mode skip-build
 
 # Copia il resto del codice
 COPY . .
