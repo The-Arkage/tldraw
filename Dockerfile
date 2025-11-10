@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Installa dipendenze di sistema
+RUN apk add --no-cache git
+
 # Abilita Corepack per Yarn 4
 RUN corepack enable
 
@@ -9,13 +12,15 @@ RUN corepack enable
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
 
-# Installa dipendenze saltando i build scripts
-RUN yarn install --mode skip-build
+# Copia tutti i package.json del workspace per il workspace resolution
+COPY packages ./packages
+COPY apps ./apps
+COPY internal ./internal
 
-# Copia il resto del codice
-COPY . .
+# Installa tutte le dipendenze normalmente (con build dei pacchetti workspace)
+RUN yarn install
 
-# Build della specifica app
+# Build solo dell'app dotcom
 WORKDIR /app/apps/dotcom
 RUN yarn build
 
