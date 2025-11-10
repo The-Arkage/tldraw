@@ -11,8 +11,12 @@ RUN corepack enable
 # Copia tutto il codice
 COPY . .
 
-# Inizializza git (necessario per alcuni script postinstall)
-RUN git init && git add . && git commit -m "initial"
+# Configura git e inizializza repository
+RUN git config --global user.email "build@docker.local" && \
+    git config --global user.name "Docker Build" && \
+    git init && \
+    git add . && \
+    git commit -m "initial"
 
 # Installa tutte le dipendenze
 RUN yarn install
