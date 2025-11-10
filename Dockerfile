@@ -8,16 +8,13 @@ RUN apk add --no-cache git
 # Abilita Corepack per Yarn 4
 RUN corepack enable
 
-# Copia package files
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
+# Copia tutto il codice
+COPY . .
 
-# Copia tutti i package.json del workspace per il workspace resolution
-COPY packages ./packages
-COPY apps ./apps
-COPY internal ./internal
+# Inizializza git (necessario per alcuni script postinstall)
+RUN git init && git add . && git commit -m "initial"
 
-# Installa tutte le dipendenze normalmente (con build dei pacchetti workspace)
+# Installa tutte le dipendenze
 RUN yarn install
 
 # Build solo dell'app dotcom
